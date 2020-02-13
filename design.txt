@@ -1,0 +1,34 @@
+this program will be a terminal notecard utility.
+
+MAIN OBJECTS
+1. Decks: groups of notecards that are stored within a file system in program directory
+    -Each deck will be made up of cards
+2. Cards: individual notecards and relivant information on each
+    -char* front
+    -char* back
+    -int passes //amount of time user has viewed card
+    -int hits   //amount of correct answers from user
+    -char* thoughts //slot for user to add thoughts about card
+    -bool active//if user no longer wants to see card in current rotation...
+
+
+FEATURES
+    -next card
+    -flip card
+    -take card out of rotation
+    -change front of card
+    -change back of card
+    -add thought to card
+    -delete card
+    -diffrent deck
+    -view decks
+    -load deck
+    -remove deck
+
+My thoughts: this is the classic empasculation problem
+Decks: view. add. remove. index access.
+    Dynamic array with expansion option
+Deck: iterate through. Last in first out.
+   Circularly linked list queue
+
+
