@@ -1,70 +1,147 @@
 #include "list.h"
 #include "myutil.h"
 
-msg::msg():data(NULL), source(NULL), next(NULL)
+card::card():front(NULL), back(NULL), thoughts(NULL), next(NULL), show(true)
 {}
 
-msg::msg(const msg& copy)
+
+
+card::card(const card& copy)
 {
-    init(copy.data, copy.source); 
+    show = true;
+    init(copy.front, copy.back, copy.thoughts); 
 }
 
-msg::msg(const char* d, const char* s)
-{
-    init(d, s);
 
+
+card::card(const char* d, const char* s, const char* t)
+{
+    show = true;
+    init(d, s, t);
 }
 
-msg::~msg()
+
+
+card::~card()
 {
-    if (data) 
+    if (front) 
     {
-        delete[] data;
-        data = NULL;
+        delete[] front;
+        front = NULL;
     }
-    if (source) 
+    if (back) 
     {
-        delete[] source;
-        source = NULL;
+        delete[] back;
+        back = NULL;
     }
+    if (thoughts) 
+    {
+        delete[] thoughts;
+        thoughts = NULL;
+    }
+    show = false;
+    next = NULL;
 }
 
-void msg::display() const
+
+
+void card::display() const
 {
     if (this == NULL) return;
-    cout<< source << ":\t" << data << "\"\n";
+    cout<< back << ":\t" << front << "\"\n";
 }
 
-msg*& msg::go_next()
+
+
+card*& card::go_next()
 {
     return next;
 }
 
-char* msg::get_data() const
+
+
+void card::show_front() const 
 {
-    return data;
+    cout << front;
 }
 
-void msg::init(const char* d, const char* s)
-{
 
-    data = new char[strlen(d)+1];
-    strcpy(data, d);
-    source = new char[strlen(s)+1];
-    strcpy(source, s);
+
+void card::show_back() const  
+{
+    cout << back << "\n\n\n\n\n\n\n" << thoughts;
 }
 
-/*bool msg::operator==(const msg& s) const 
+
+
+void card::edit_front(const char* n_front)
+{
+    char* n = new char[strlen(n_front)+1];
+    strcmp(n, n_front);
+    delete[] front;
+    front = n;
+}
+
+
+
+void card::edit_back(const char* n_back)
+{
+
+    char* n = new char[strlen(n_back)+1];
+    strcmp(n, n_back);
+    delete[] back;
+    back = n;
+}
+
+
+
+void card::edit_thoughts(const char* thot)
+{
+   
+    char* n = new char[strlen(thot)+1];
+    strcmp(n, thot);
+    delete[] thoughts;
+    thoughts = n;
+}
+
+
+
+char* card::get_front() const
+{
+    return front;
+}
+
+
+
+void card::init(const char* d, const char* s, const char* t)
+{
+    front = new char[strlen(d)+1];
+    strcpy(front, d);
+    back = new char[strlen(s)+1];
+    strcpy(back, s);
+    thoughts = new char[strlen(t)+1];
+    strcpy(thoughts, t);
+
+}
+
+
+/*
+bool card::operator==(const card& s) const 
  {
-    //strcmp(data, s.get_data()) == 0? return true: return false;
-    if(strcmp(data, s.get_data()) == 0) 
+    //strcmp(front, s.get_front()) == 0? return true: return false;
+    if(strcmp(front, s.get_front()) == 0) 
         return true;
     return false;
-}*/
+}
+*/
 ////////////////////////LIST///////////////////////////////
+
+
 
 list::list(): head(NULL)
 {}
+
+
 
 list::~list()
 {
@@ -72,18 +149,21 @@ list::~list()
     {
         destroy(head);
         head = NULL;
+
     }
 }
 
 
-//inserts element at the front of list
-void list::push_front(const msg* in) {//in = "new kidk
 
-    msg* dk = new msg(*in);   
+//inserts element at the front of list
+void list::add(const card* in) {//in = "new kidk
+
+    card* dk = new card(*in);   
     head?dk->go_next() = head: dk->go_next() = NULL;
     head = dk;
 
 }
+
 
 
 //publci member that clears contents of list
@@ -94,6 +174,7 @@ void list::clear()
 }
 
 
+
 //public member that displays list
 void list::display() const
 {
@@ -101,17 +182,19 @@ void list::display() const
 }
 
 
+
 //public member function for searching list
-msg* list::search(const char* d) const
+card* list::search(const char* d) const
 {
     return search(head, d);
 }
 
 
-//public member function that searches via msg.data and deletes the match
+
+//public member function that searches via card.front and deletes the match
 bool list::remove(const char* d)
 {
-    msg* holder = cut(d);
+    card* holder = cut(d);
     if(!holder)
     {
         delete holder;
@@ -122,8 +205,9 @@ bool list::remove(const char* d)
 }
 
 
+
 //recursive helper function that displays list
-void list::display(msg* cur) const
+void list::display(card* cur) const
 {
     if(cur != NULL) 
     {
@@ -133,8 +217,9 @@ void list::display(msg* cur) const
 }
 
 
+
 //destroys list recursively
-void list::destroy(msg*& cur)
+void list::destroy(card*& cur)
 {
      
     if (cur) 
@@ -145,12 +230,13 @@ void list::destroy(msg*& cur)
 }
 
 
-//recursive helper that searches list for a msg whose data matches d
-msg* list::search(msg* cur, const char* d) const
+
+//recursive helper that searches list for a card whose front matches d
+card* list::search(card* cur, const char* d) const
 {   
     if (cur)
     {
-        if (strcmp(d, cur->get_data()) == 0)
+        if (strcmp(d, cur->get_front()) == 0)
         {
             return cur; 
         }  
@@ -161,12 +247,12 @@ msg* list::search(msg* cur, const char* d) const
 
 
 
-//searches begining of list for message. calls cut_body to search body for msg, cuts and returns
-msg* list::cut(const char* d)
+//searches begining of list for message. calls cut_body to search body for card, cuts and returns
+card* list::cut(const char* d)
 {
-    if (strcmp(head->get_data(), d) == 0)
+    if (strcmp(head->get_front(), d) == 0)
     {
-        msg* temp = head;
+        card* temp = head;
         head = head->go_next();
         return temp;
     }
@@ -175,16 +261,15 @@ msg* list::cut(const char* d)
 }
 
 
-//recursively searches body for msg to remove from list. returns said msg
-msg* list::cut_body(msg*& cur, const char* d)
+
+//recursively searches body for card to remove from list. returns said card
+card* list::cut_body(card*& cur, const char* d)
 {
-    //ok. 1. remove the head. going to need to reach into this and reset head
-    //2. remove a body: reset previous pointer. 
     if (cur == NULL) 
         return NULL;
-    if (strcmp (cur->go_next()->get_data(), d) == 0)
+    if (strcmp (cur->go_next()->get_front(), d) == 0)
     {
-        msg* ret = cur->go_next();
+        card* ret = cur->go_next();
         cur->go_next() = cur->go_next()->go_next();
         return ret; 
     }
@@ -193,6 +278,74 @@ msg* list::cut_body(msg*& cur, const char* d)
         return cut_body(cur->go_next(), d); 
 }
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+deck::deck():size(0), tail(NULL), name(NULL)
+{
+}
+
+
+
+deck::deck(const char* file)
+{
+
+}
+
+
+
+deck::~deck()
+{
+    destroy(head, tail);
+    head = NULL;
+    tail = NULL;
+}
+
+
+void deck::destroy(card* cur, const card* tail)
+{
+    if (cur && cur != tail) 
+    {
+        destroy(cur->go_next(), tail);
+        delete cur;
+    }
+}
+
+
+
+void deck::add(card* n)
+{
+    card*  n_card = new card(*n);
+    n_card->go_next() = NULL;
+    
+    (!tail)? head = tail = n_card: tail->go_next() = n_card;
+
+    n_card->go_next() = head;
+    head = n_card;
+}
+
+
+
+void deck::display() const
+{
+    if (head == NULL)
+        return;
+
+    display(head, tail);
+}
+
+
+
+//displays front of each card
+void deck::display(card* cur, const card* tail) const
+{
+    if(cur == NULL || cur == tail)
+        return;
+
+    cur->display();
+    display(cur->go_next(), tail);
+}
 
 
 

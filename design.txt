@@ -16,14 +16,22 @@ FEATURES
     -next card
     -flip card
     -take card out of rotation
+        -->card to_show set to false. deck display only displays to_show == true
     -change front of card
+        -->edit_front(const char* n_front) // generic setter
+        ?how can we display current front and let user change specific parts of the string?
     -change back of card
+        -->same as front
     -add thought to card
+        -->add_thought(const char* n_thot)
     -delete card
+        -->basic delete from a circularly linked list
     -diffrent deck
-    -view decks
-    -load deck
-    -remove deck
+        ?This is far out. worry about after functioning decks
+                    maybe a linked list of decks???
+            -view decks
+            -load deck
+            -remove deck
 
 My thoughts: this is the classic empasculation problem
 Decks: view. add. remove. index access.
